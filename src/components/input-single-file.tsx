@@ -40,10 +40,12 @@ interface InputSingleFileProps extends VariantProps<typeof inputSingleFileVarian
   Omit<React.ComponentProps<"input">, "size"> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: any
+  allowedExtensions: string[]
+  maxFileSizeInMB: number,
   error?: React.ReactNode
 }
 
-export default function InputSingleFile({ form, size, error, ...props }: InputSingleFileProps) {
+export default function InputSingleFile({ form, size, error, allowedExtensions, maxFileSizeInMB, ...props }: InputSingleFileProps) {
   const formValues = useWatch({ control: form.control })
   const name = props.name || ""
   const formFile: File = useMemo(
@@ -51,11 +53,26 @@ export default function InputSingleFile({ form, size, error, ...props }: InputSi
     [formValues, name]
   );
 
-  console.log(formValues, name, formFile);
+  const { fileExtension, fileSize } = useMemo(() => ({
+    fileExtension: formFile?.name?.split('.')?.pop()?.toLowerCase() || "",
+    fileSize: formFile?.size || 0
+  }), [formFile])
+
+  function isValidExtension() {
+    return allowedExtensions.includes(fileExtension)
+  }
+
+  function isValidSize() {
+    return fileSize <= maxFileSizeInMB * 1024 * 1024
+  }
+
+  function isValidFile() {
+    return isValidExtension() && isValidSize()
+  }
 
   return (
     <div>
-      {!formFile ? (
+      {!formFile || !isValidFile() ? (
         <>
           <div className="w-full relative group cursor-pointer">
             <input type="file" className={`
@@ -71,6 +88,16 @@ export default function InputSingleFile({ form, size, error, ...props }: InputSi
               </Text>
             </div>
           </div>
+          {formFile && !isValidExtension() &&
+            <Text variant="label-small" className="text-accent-red">
+              Tipo de arquivo inválido
+            </Text>
+          }
+          {formFile && !isValidSize() &&
+            <Text variant="label-small" className="text-accent-red">
+              O tamanho do arquivo ultrapassa o máximo
+            </Text>
+          }
           {error && (
             <Text variant="label-small" className="text-accent-red">
               Erro no campo
