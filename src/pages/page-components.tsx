@@ -74,34 +74,33 @@ export default function PageComponents() {
       </div>
 
       <div>
-        <div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Abrir Modal</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>Teste dialog</DialogHeader>
-              <DialogBody>
-                <Text as="div">Teste conteúdo do dialog</Text>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Abrir Modal</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>Teste dialog</DialogHeader>
+            <DialogBody>
+              <Text as="div">Teste conteúdo do dialog</Text>
 
-                <InputSingleFile
-                  allowedExtensions={["png", "jpg", "jpeg", "webp"]}
-                  maxFileSizeInMB={50}
-                  form={form}
-                  replaceBy={<ImagePreview src={fileSrc} alt="Imagem" />}
-                  {...form.register("file")}
-                />
-              </DialogBody>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="secondary">Cancelar</Button>
-                </DialogClose>
-                <Button>Adicionar</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+              <InputSingleFile
+                allowedExtensions={["png", "jpg", "jpeg", "webp"]}
+                maxFileSizeInMB={50}
+                form={form}
+                replaceBy={<ImagePreview src={fileSrc} alt="Imagem" />}
+                {...form.register("file")}
+              />
+            </DialogBody>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="secondary">Cancelar</Button>
+              </DialogClose>
+              <Button>Adicionar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
+
     </div>
   );
 }
