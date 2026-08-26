@@ -7,10 +7,12 @@ import PhotosNavigator from "../contexts/photos/components/photos-navigator";
 import ImagePreview from "../components/image-preview";
 import Button from "../components/button";
 import AlbumsListSelectable from "../contexts/albums/components/albums-list-selectable";
+import useAlbums from "../contexts/albums/hooks/use-albums";
 
 
 export default function PagePhotoDetails() {
   const { id } = useParams()
+  const { albums, isLoadingAlbums } = useAlbums()
   // Apenas para fazer o test do mock
   const isLoadingPhoto = false
   const photo = {
@@ -61,11 +63,7 @@ export default function PagePhotoDetails() {
           <Text as="h3" variant="heading-medium" className="mb-7">
             Álbuns
           </Text>
-          <AlbumsListSelectable photo={photo} albums={[
-            { id: '3421', title: 'Album 1' },
-            { id: '123', title: 'Album 2' },
-            { id: '456', title: 'Album 3' }
-          ]} />
+          <AlbumsListSelectable photo={photo} albums={albums} loading={isLoadingAlbums} />
         </div>
       </div>
     </Container>
