@@ -11,7 +11,8 @@ import { useForm } from "react-hook-form";
 import useAlbums from "../../albums/hooks/use-albums";
 import { photoNewFormSchema, type PhotoNewFormSchema } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import usePhoto from "../hooks/use-photo";
 
 
 
@@ -25,6 +26,8 @@ export default function PhotoNewDialog({ trigger }: PhotoNewDialogProps) {
     resolver: zodResolver(photoNewFormSchema) // ele resolve o formulario com base no schema
   })
   const { albums, isLoadingAlbums } = useAlbums()
+  const { createPhoto } = usePhoto()
+  const [isCreatingPhoto, setIsCreatingPhoto] = useTransition()
 
   const file = form.watch("file")
   const fileSrc = file?.[0] ? URL.createObjectURL(file[0]) : undefined
@@ -51,7 +54,10 @@ export default function PhotoNewDialog({ trigger }: PhotoNewDialogProps) {
   }
 
   function handleSubmit(payload: PhotoNewFormSchema) {
-    console.log(payload)
+    setIsCreatingPhoto(async () => {
+      await createPhoto(payload)
+      setModalOpen(false)
+    })
   }
 
   return (
@@ -120,10 +126,10 @@ export default function PhotoNewDialog({ trigger }: PhotoNewDialogProps) {
 
           <DialogFooter>
             <DialogClose>
-              <Button variant="destructive">Cancelar</Button>
+              <Button disabled={isCreatingPhoto} variant="destructive">Cancelar</Button>
             </DialogClose>
 
-            <Button type="submit">Adicionar</Button>
+            <Button disabled={isCreatingPhoto} handling={isCreatingPhoto} type="submit">{isCreatingPhoto ? "Adicionando..." : "Adicionar"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
