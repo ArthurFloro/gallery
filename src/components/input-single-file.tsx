@@ -101,7 +101,7 @@ export default function InputSingleFile({ form, size, error, allowedExtensions, 
           }
           {error && (
             <Text variant="label-small" className="text-accent-red">
-              Erro no campo
+              {error}
             </Text>
           )}
         </>
