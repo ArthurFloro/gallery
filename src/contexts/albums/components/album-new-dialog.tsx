@@ -17,7 +17,8 @@ import usePhotos from "../../photos/hooks/use-photos";
 import { useForm } from "react-hook-form";
 import { albumNewFormSchema, type AlbumNewFormSchema } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import useAlbum from "../hooks/use-album";
 
 interface AlbumNewDialogProps {
   trigger: React.ReactNode;
@@ -29,6 +30,8 @@ export default function AlbumNewDialog({ trigger }: AlbumNewDialogProps) {
     resolver: zodResolver(albumNewFormSchema)
   })
   const { photos, isLoadingPhotos } = usePhotos()
+  const { createAlbum } = useAlbum();
+  const [isCreatingAlbum, setIsCreatingAlbum] = useTransition();
 
   useEffect(() => {
     if (!modalOpen) {
@@ -50,7 +53,10 @@ export default function AlbumNewDialog({ trigger }: AlbumNewDialogProps) {
   }
 
   function handleSubmit(payload: AlbumNewFormSchema) {
-    console.log(payload)
+    setIsCreatingAlbum(async () => {
+      await createAlbum(payload)
+      setModalOpen(false)
+    })
   }
 
   return (
@@ -110,9 +116,9 @@ export default function AlbumNewDialog({ trigger }: AlbumNewDialogProps) {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="secondary">Cancelar</Button>
+              <Button disabled={isCreatingAlbum} variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit">Criar</Button>
+            <Button handling={isCreatingAlbum} disabled={isCreatingAlbum} type="submit">Criar</Button>
           </DialogFooter>
         </form>
       </DialogContent>
